@@ -40,13 +40,6 @@ export default function Login() {
     else if (mode === 'register') setMsg('Revisa tu correo para confirmar la cuenta.')
   }
 
-  async function google() {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: { redirectTo: window.location.origin },
-    })
-    if (error) setMsg(error.message)
-  }
 
   async function recover() {
     if (!email) return setMsg('Escribe tu correo primero.')
@@ -79,9 +72,6 @@ export default function Login() {
         </button>
         <button disabled={busy} className="w-full rounded-xl bg-cyanx py-3 font-semibold text-graphite disabled:opacity-50">
           {mode === 'login' ? 'Entrar' : 'Crear cuenta'}
-        </button>
-        <button type="button" onClick={google} className="w-full rounded-xl border border-white/15 py-3">
-          Continuar con Google
         </button>
         {msg && <p className="text-sm text-amber-300">{msg}</p>}
         <div className="flex justify-between text-xs text-slate-400">
