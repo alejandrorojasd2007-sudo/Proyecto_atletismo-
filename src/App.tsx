@@ -1,10 +1,18 @@
+import { Route, Routes } from 'react-router-dom'
+import Layout from './app/Layout'
+import Dashboard from './features/dashboard/Dashboard'
+import Page from './components/Page'
+
 export default function App() {
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center gap-3 p-6">
-      <h1 className="text-4xl font-bold tracking-tight">
-        VELOCITY <span className="text-cyanx">AI</span>
-      </h1>
-      <p className="text-slate-400">The science of speed.</p>
-    </main>
+    <Routes>
+      <Route element={<Layout />}>
+        <Route index element={<Dashboard />} />
+        <Route path="analizar" element={<Page title="Analizar" text="Aquí subirás videos y fotos para analizar tu técnica." />} />
+        <Route path="estadisticas" element={<Page title="Estadísticas" text="Marcas, tendencias y evolución por sesión." />} />
+        <Route path="brain" element={<Page title="VELOCITY BRAIN" text="Tu asistente deportivo con IA." />} />
+        <Route path="perfil" element={<Page title="Perfil" text="Tus datos, especialidades y privacidad." />} />
+      </Route>
+    </Routes>
   )
 }
