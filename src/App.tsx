@@ -5,6 +5,7 @@ import Profile from './features/profile/Profile'
 import Login from './features/auth/Login'
 import { AuthProvider, useAuth } from './features/auth/AuthContext'
 import Page from './components/Page'
+import Analyze from './features/analysis/Analyze'
 
 function Protected() {
   const { session, loading } = useAuth()
@@ -19,7 +20,7 @@ export default function App() {
         <Route path="/login" element={<Login />} />
         <Route element={<Protected />}>
           <Route index element={<Dashboard />} />
-          <Route path="analizar" element={<Page title="Analizar" text="Aquí subirás videos y fotos para analizar tu técnica." />} />
+          <Route path="analizar" element={<Analyze />} />
           <Route path="estadisticas" element={<Page title="Estadísticas" text="Marcas, tendencias y evolución por sesión." />} />
           <Route path="brain" element={<Page title="VELOCITY BRAIN" text="Tu asistente deportivo con IA." />} />
           <Route path="perfil" element={<Profile />} />
