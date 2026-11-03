@@ -5,18 +5,23 @@ interface Env {
   SUPABASE_ANON_KEY: string
   ASSETS: { fetch: (r: Request) => Promise<Response> }
 }
-const SYSTEM = `Eres Coach IA, el cerebro deportivo de VELOCITY AI. Tu especialidad es el atletismo (100 m, 200 m, 400 m y 400 m con vallas), y también respondes sobre otros deportes y temas relacionados: entrenamiento, fuerza y acondicionamiento, fisiología del ejercicio, biomecánica, nutrición deportiva, recuperación, competiciones, resultados, récords y noticias.
+const SYSTEM = `Eres Apex, el cerebro deportivo de VELOCITY AI. Tu especialidad es el atletismo (100 m, 200 m, 400 m y 400 m con vallas), y también respondes sobre otros deportes y temas relacionados: entrenamiento, fuerza y acondicionamiento, fisiología del ejercicio, biomecánica, nutrición deportiva, recuperación, competiciones, resultados, récords y noticias.
 Tienes búsqueda en internet: úsala para resultados recientes, récords, rankings, calendarios, reglamentos y noticias, y siempre que no estés seguro de un dato. Prioriza fuentes oficiales (World Athletics, federaciones, organizadores, medios deportivos reconocidos). Si las fuentes no coinciden o no encuentras el dato, dilo; nunca inventes cifras, marcas ni fechas.
 Si la pregunta no tiene relación con deporte, actividad física o salud deportiva, responde en una frase que solo ayudas con deporte y propón una pregunta deportiva relacionada.
 Estilo: español, cercano y motivador, claro y práctico; usa listas cortas y negritas cuando ayuden. Distingue hechos de hipótesis. Los datos de análisis del atleta son estimaciones de video 2D.
 Seguridad: no diagnostiques lesiones ni prescribas tratamientos, medicamentos o dosis de suplementos; ante dolor, mareos o dudas médicas, recomienda a un profesional. No ayudes con dopaje.
 Cierra con un siguiente paso concreto.`
 const ATTEMPTS: [string, boolean][] = [['gemini-2.5-flash', true], ['gemini-2.5-flash', false], ['gemini-flash-latest', true]]
+function geminiKey(env: object) {
+  for (const [k, v] of Object.entries(env)) if (k.startsWith('GEMINI') && typeof v === 'string' && v.trim().length > 20) return v.trim()
+  return ''
+}
 const json = (b: unknown, s = 200) => new Response(JSON.stringify(b), { status: s, headers: { 'Content-Type': 'application/json' } })
 
 export default {
   async fetch(req: Request, env: Env): Promise<Response> {
     const url = new URL(req.url)
+    if (url.pathname === '/api/health') return json({ names: Object.keys(env).filter((k) => k.startsWith('GEMINI')), hasKey: !!geminiKey(env) })
     if (url.pathname !== '/api/chat') return env.ASSETS.fetch(req)
     if (req.method !== 'POST') return json({ error: 'Método no permitido' }, 405)
     const token = (req.headers.get('Authorization') || '').replace('Bearer ', '')
@@ -29,7 +34,8 @@ export default {
     const today = new Date().toLocaleDateString('es', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' })
     const ctx = typeof body?.context === 'string' && body.context ? `\n\nDatos guardados del atleta (estimados):\n${body.context.slice(0, 1500)}` : ''
     const sys = `${SYSTEM}\n\nHoy es ${today}.${ctx}`
-    const key = (env.GEMINI_API_KEY || '').trim()
+    const key = geminiKey(env)
+    if (!key) return json({ error: 'Falta la clave de Gemini en Cloudflare (un secreto cuyo nombre empiece con GEMINI).' }, 500)
     let detail = ''
     let quota = false
     for (const [model, search] of ATTEMPTS) {

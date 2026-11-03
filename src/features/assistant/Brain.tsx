@@ -143,8 +143,8 @@ export default function Brain() {
       <div className="glass mb-3 flex items-center gap-3 rounded-3xl p-3">
         <Avatar size={42} />
         <div className="flex-1">
-          <p className="font-semibold leading-tight">Coach IA</p>
-          <p className="flex items-center gap-1.5 text-xs text-slate-400"><span className="h-2 w-2 rounded-full bg-lime" /> En línea · busca en internet</p>
+          <p className="font-semibold leading-tight">Apex</p>
+          <p className="flex items-center gap-1.5 text-xs text-slate-400"><span className="h-2 w-2 rounded-full bg-lime" /> Inteligencia deportiva · en línea</p>
         </div>
         <button onClick={reset} aria-label="Nueva conversación" className="btn btn-ghost btn-sm"><SquarePen size={16} /></button>
       </div>
@@ -201,7 +201,7 @@ export default function Brain() {
             onChange={(e) => setText(e.target.value)}
             onInput={(e) => { e.currentTarget.style.height = 'auto'; e.currentTarget.style.height = Math.min(e.currentTarget.scrollHeight, 120) + 'px' }}
             onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); void send() } }}
-            placeholder="Escribe a tu Coach IA…"
+            placeholder="Pregúntale a Apex…"
             className="max-h-[120px] flex-1 resize-none bg-transparent px-3 py-2.5 text-[15px] outline-none placeholder:text-slate-500"
           />
           <button onClick={() => send()} disabled={busy || !text.trim()} className="btn btn-primary !rounded-full !p-3"><Send size={18} /></button>
