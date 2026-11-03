@@ -1,5 +1,6 @@
 interface Env {
-  GEMINI_API_KEY: string
+  GEMINI_API_KEY?: string
+  GEMINI_API_ATLETISMO?: string
   SUPABASE_URL: string
   SUPABASE_ANON_KEY: string
   ASSETS: { fetch: (r: Request) => Promise<Response> }
