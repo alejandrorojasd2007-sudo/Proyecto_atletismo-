@@ -5,6 +5,8 @@ import { BrowserRouter } from 'react-router-dom'
 import './index.css'
 import App from './App'
 
+if (localStorage.getItem('vel_reduce') === '1') document.documentElement.classList.add('reduce')
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <BrowserRouter>

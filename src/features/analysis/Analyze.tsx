@@ -5,7 +5,8 @@ import { Card, Screen } from '../../components/ui'
 import { supabase } from '../../services/supabase'
 import { useAuth } from '../auth/AuthContext'
 import { EVENTS } from '../../types/events'
-import { analyzeVideo, type Metric } from './poseEngine'
+import { analyzeVideo, type Metric, type Track } from './poseEngine'
+import Player from './Player'
 
 const MAX = 50 * 1024 * 1024
 const NAMES: Record<string, string> = {
@@ -30,6 +31,7 @@ export default function Analyze() {
   const [label, setLabel] = useState('')
   const [busy, setBusy] = useState(false)
   const [results, setResults] = useState<Metric[]>([])
+  const [track, setTrack] = useState<Track | null>(null)
 
   function pick(e: ChangeEvent<HTMLInputElement>) {
     const f = e.target.files?.[0] ?? null
@@ -41,12 +43,14 @@ export default function Analyze() {
     const uid = session?.user.id
     if (!uid || !file) return setMsg('Elige un video.')
     if (!consent) return setMsg('Debes confirmar el consentimiento.')
-    setBusy(true); setMsg(''); setResults([]); setPct(1)
+    setBusy(true); setMsg(''); setResults([]); setTrack(null); setPct(1)
     const h = Number(height.replace(',', '.'))
     const heightCm = h > 100 && h < 230 ? h : undefined
     let metrics: Metric[]
     try {
-      metrics = await analyzeVideo(file, { heightCm }, (p, l) => { setPct(Math.round(p * 85)); setLabel(l) })
+      const out = await analyzeVideo(file, { heightCm }, (p, l) => { setPct(Math.round(p * 85)); setLabel(l) })
+      metrics = out.metrics
+      setTrack(out.track)
     } catch (e) {
       setBusy(false); setPct(0)
       return setMsg(e instanceof Error ? e.message : 'No se pudo analizar el video.')
@@ -104,6 +108,12 @@ export default function Analyze() {
         )}
         {msg && <p className="text-sm text-amber-300">{msg}</p>}
       </Card>
+
+      {track && file && (
+        <Card>
+          <Player file={file} track={track} />
+        </Card>
+      )}
 
       {segs.length > 0 && (
         <Card>

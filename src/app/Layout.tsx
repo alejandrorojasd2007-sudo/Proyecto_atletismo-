@@ -8,7 +8,7 @@ const items = [
   { to: '/', label: 'Inicio', icon: Home },
   { to: '/analizar', label: 'Analizar', icon: Video },
   { to: '/estadisticas', label: 'Stats', icon: BarChart3 },
-  { to: '/brain', label: 'Brain', icon: Bot },
+  { to: '/brain', label: 'Coach', icon: Bot },
   { to: '/perfil', label: 'Perfil', icon: User },
 ]
 

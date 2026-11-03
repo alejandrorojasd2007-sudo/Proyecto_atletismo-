@@ -6,6 +6,7 @@ import Dashboard from './features/dashboard/Dashboard'
 import Analyze from './features/analysis/Analyze'
 import Stats from './features/statistics/Stats'
 import Brain from './features/assistant/Brain'
+import Train from './features/training/Train'
 import Profile from './features/profile/Profile'
 import Login from './features/auth/Login'
 import { AuthProvider, useAuth } from './features/auth/AuthContext'
@@ -33,6 +34,7 @@ export default function App() {
           <Route path="analizar" element={<Analyze />} />
           <Route path="estadisticas" element={<Stats />} />
           <Route path="brain" element={<Brain />} />
+          <Route path="entrenar" element={<Train />} />
           <Route path="perfil" element={<Profile />} />
         </Route>
       </Routes>

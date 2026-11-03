@@ -6,6 +6,7 @@ import { supabase } from '../../services/supabase'
 import { Card, Screen } from '../../components/ui'
 import { EVENTS, eventLabel } from '../../types/events'
 import InstallButton from '../../components/InstallButton'
+import Settings from './Settings'
 
 type PB = { id: string; event: string; mark_seconds: number }
 
@@ -72,6 +73,7 @@ export default function Profile() {
         </ul>
         {msg && <p className="mt-3 text-sm text-amber-300">{msg}</p>}
       </Card>
+      <Settings />
       <InstallButton />
       <button onClick={() => supabase.auth.signOut()} className="btn btn-ghost w-full"><LogOut size={16} /> Cerrar sesión</button>
     </Screen>
