@@ -17,7 +17,7 @@ export default function Layout() {
   const outlet = useOutlet()
   return (
     <div className="min-h-screen pb-32">
-      <div className="aurora"><i /><i /><i /><i /><b className="streak" /><b className="streak s2" /><b className="streak s3" /><span className="track" /></div>
+      <div className="aurora"><i /><i /><i /></div>
       <header className="flex items-center justify-between px-5 pb-3 pt-5">
         <Logo />
         <InstallButton compact />
