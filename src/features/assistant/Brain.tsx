@@ -1,13 +1,16 @@
 import { useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import ReactMarkdown from 'react-markdown'
-import { Activity, BarChart3, CalendarDays, HeartPulse, Send, SquarePen, Zap } from 'lucide-react'
+import { Activity, BarChart3, CalendarDays, Globe, HeartPulse, Send, SquarePen, Trophy, Zap } from 'lucide-react'
 import { supabase } from '../../services/supabase'
 import { useAuth } from '../auth/AuthContext'
 
-type Msg = { role: 'user' | 'assistant'; content: string; at: string }
+type Src = { uri: string; title: string }
+type Msg = { role: 'user' | 'assistant'; content: string; at: string; src?: Src[]; sug?: string }
 const CHIPS = [
   { icon: Zap, label: 'Salida', q: '¿Cómo mejoro mi salida y los primeros 30 m?' },
+  { icon: Globe, label: 'Noticias', q: '¿Cuáles son las últimas noticias y resultados del atletismo esta semana?' },
+  { icon: Trophy, label: 'Récords', q: '¿Cuáles son los récords mundiales actuales de 100, 200 y 400 m y 400 m vallas?' },
   { icon: Activity, label: 'Técnica', q: 'Dame 3 correcciones técnicas clave para mi carrera.' },
   { icon: CalendarDays, label: 'Plan semanal', q: 'Arma mi plan de entrenamiento de esta semana.' },
   { icon: HeartPulse, label: 'Recuperación', q: '¿Cómo me recupero mejor entre sesiones?' },
@@ -74,7 +77,9 @@ export default function Brain() {
     if (!t || busy || !uid) return
     const history: Msg[] = [...msgs, { role: 'user', content: t, at: new Date().toISOString() }]
     const botAt = new Date().toISOString()
-    const show = (c: string) => setMsgs([...history, { role: 'assistant', content: c, at: botAt }])
+    let src: Src[] = []
+    let sug = ''
+    const show = (c: string) => setMsgs([...history, { role: 'assistant', content: c, at: botAt, src, sug }])
     show(''); setText(''); setBusy(true)
     if (ta.current) ta.current.style.height = 'auto'
     let acc = ''
@@ -103,8 +108,12 @@ export default function Brain() {
           const line = part.split('\n').find((l) => l.startsWith('data:'))
           if (!line) continue
           try {
-            const d = JSON.parse(line.slice(5)) as { candidates?: { content?: { parts?: { text?: string }[] } }[] }
-            acc += d.candidates?.[0]?.content?.parts?.map((x) => x.text ?? '').join('') ?? ''
+            const d = JSON.parse(line.slice(5)) as { candidates?: { content?: { parts?: { text?: string }[] }; groundingMetadata?: { groundingChunks?: { web?: { uri?: string; title?: string } }[]; searchEntryPoint?: { renderedContent?: string } } }[] }
+            const cand = d.candidates?.[0]
+            acc += cand?.content?.parts?.map((x) => x.text ?? '').join('') ?? ''
+            const gm = cand?.groundingMetadata
+            if (gm?.groundingChunks?.length) src = gm.groundingChunks.flatMap((g) => (g.web?.uri ? [{ uri: g.web.uri, title: g.web.title ?? g.web.uri }] : []))
+            if (gm?.searchEntryPoint?.renderedContent) sug = gm.searchEntryPoint.renderedContent
             show(acc)
           } catch { /* fragmento incompleto */ }
         }
@@ -135,7 +144,7 @@ export default function Brain() {
         <Avatar size={42} />
         <div className="flex-1">
           <p className="font-semibold leading-tight">Coach IA</p>
-          <p className="flex items-center gap-1.5 text-xs text-slate-400"><span className="h-2 w-2 rounded-full bg-lime" /> En línea · entrena contigo</p>
+          <p className="flex items-center gap-1.5 text-xs text-slate-400"><span className="h-2 w-2 rounded-full bg-lime" /> En línea · busca en internet</p>
         </div>
         <button onClick={reset} aria-label="Nueva conversación" className="btn btn-ghost btn-sm"><SquarePen size={16} /></button>
       </div>
@@ -145,7 +154,7 @@ export default function Brain() {
           <div className="flex flex-col items-center gap-3 px-6 pt-10 text-center">
             <Avatar size={72} />
             <p className="text-xl font-bold">¡Vamos a mejorar tu marca!</p>
-            <p className="text-sm text-slate-400">Pregúntame por técnica, salidas, ritmo, planes de entrenamiento o tus análisis de video.</p>
+            <p className="text-sm text-slate-400">Pregúntame de atletismo y otros deportes: técnica, planes, resultados, récords y noticias de última hora.</p>
           </div>
         )}
         {msgs.map((m, i) => (
@@ -161,6 +170,14 @@ export default function Brain() {
                   <div className="md"><ReactMarkdown>{m.content}</ReactMarkdown></div>
                 )}
               </div>
+              {!!m.src?.length && (
+                <div className="mt-2 flex flex-wrap gap-1.5">
+                  {m.src.slice(0, 5).map((x, k) => (
+                    <a key={k} href={x.uri} target="_blank" rel="noreferrer" className="glass max-w-[180px] truncate rounded-full px-3 py-1 text-[11px] text-cyanx">{x.title}</a>
+                  ))}
+                </div>
+              )}
+              {m.sug && <iframe title="Sugerencias de Google" sandbox="allow-popups allow-popups-to-escape-sandbox" srcDoc={m.sug} className="mt-2 h-12 w-full rounded-2xl border-0" />}
               <p className="mt-1 text-[10px] text-slate-500">{hhmm(m.at)}</p>
             </div>
           </motion.div>
