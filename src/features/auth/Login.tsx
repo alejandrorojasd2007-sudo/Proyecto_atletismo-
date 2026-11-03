@@ -32,7 +32,7 @@ export default function Login() {
         ? await supabase.auth.signInWithPassword({ email, password })
         : await supabase.auth.signUp({ email, password, options: { emailRedirectTo: window.location.origin } })
     setBusy(false)
-    if (error) setMsg(error.message)
+    if (error) setMsg(error.message.includes('Invalid login') ? 'Correo o contraseña incorrectos.' : error.message.includes('not confirmed') ? 'Tu correo aún no está confirmado.' : error.message)
     else if (mode === 'register') setMsg('Revisa tu correo para confirmar la cuenta.')
   }
 
