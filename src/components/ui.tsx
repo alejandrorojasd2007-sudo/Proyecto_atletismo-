@@ -18,5 +18,5 @@ export function Screen({ title, subtitle, children }: { title: string; subtitle?
 }
 
 export function Card({ children, className = '' }: { children: ReactNode; className?: string }) {
-  return <motion.div variants={fade} className={`glass rounded-3xl p-5 ${className}`}>{children}</motion.div>
+  return <motion.div variants={fade} whileTap={{ scale: 0.985 }} className={`glass rounded-3xl p-5 ${className}`}>{children}</motion.div>
 }

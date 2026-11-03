@@ -44,7 +44,7 @@ export default function Login() {
 
   return (
     <main className="relative flex min-h-screen flex-col justify-center overflow-hidden px-6">
-      <div className="aurora"><i /><i /><i /></div>
+      <div className="aurora"><i /><i /><i /><i /><b className="streak" /><b className="streak s2" /><b className="streak s3" /><span className="track" /></div>
       <svg className="pointer-events-none absolute inset-x-0 top-0 h-56 w-full opacity-30" viewBox="0 0 400 200" preserveAspectRatio="none">
         {[30, 70, 110, 150].map((y) => (
           <line key={y} className="lane" x1="0" x2="400" y1={y} y2={y} stroke="#22d3ee" strokeWidth="2" />
