@@ -1,0 +1,9 @@
+@import "tailwindcss";
+@theme {
+  --color-graphite: #0b0f14;
+  --color-surface: #121821;
+  --color-cyanx: #22d3ee;
+  --color-electric: #3b82f6;
+  --color-lime: #a3e635;
+}
+body { background: var(--color-graphite); color: #e6edf3; font-family: system-ui, sans-serif; }
